@@ -36,27 +36,23 @@ export const LinkQuery = extendType({  // 2
     },
 });
 
-export const LinkMutation = extendType({  // 1
-    type: "Mutation",    
+export const LinkMutation = extendType({
+    type: "Mutation",
     definition(t) {
-        t.nonNull.field("post", {  // 2
-            type: "Link",  
-            args: {   // 3
+        t.nonNull.field("post", {
+            type: "Link",
+            args: {
                 description: nonNull(stringArg()),
                 url: nonNull(stringArg()),
             },
-            
-            resolve(parent, args, context) {    
-                const { description, url } = args;  // 4
-                
-                let idCount = links.length + 1;  // 5
-                const link = {
-                    id: idCount,
-                    description: description,
-                    url: url,
-                };
-                links.push(link);
-                return link;
+            resolve(parent, args, context) { 
+                const newLink = context.prisma.link.create({   // 2
+                    data: {
+                        description: args.description,
+                        url: args.url,
+                    },
+                });
+                return newLink;
             },
         });
     },
